@@ -14,28 +14,91 @@ METADATA_FILE = INDEX_DIR / "metadata.json"
 # ---------------------------------------------------------
 # CREATE INDEX
 # ---------------------------------------------------------
-
 def save_index(chunks: list[dict]):
+
+    if not chunks:
+        print("No chunks to save.")
+        return
+
+    # Identify PDFs being indexed
+    new_sources = {
+        chunk["source"] for chunk in chunks
+    }
 
     texts = [chunk["text"] for chunk in chunks]
 
     print("Creating embeddings...")
 
-    embeddings = embed_texts(texts)
+    new_embeddings = embed_texts(texts)
 
+    # Check existing index files
+    embeddings_exist = EMBEDDINGS_FILE.exists()
+    metadata_exist = METADATA_FILE.exists()
+
+    if embeddings_exist != metadata_exist:
+        raise RuntimeError(
+            "Index files are incomplete. Check the existing index."
+        )
+
+    if embeddings_exist and metadata_exist:
+
+        old_embeddings = np.load(EMBEDDINGS_FILE)
+
+        with open(METADATA_FILE, "r", encoding="utf-8") as file:
+            old_metadata = json.load(file)
+
+        if len(old_embeddings) != len(old_metadata):
+            raise RuntimeError(
+                "Embedding and metadata counts do not match."
+            )
+
+        # Keep PDFs that are not being re-indexed
+        keep_indices = [
+            index
+            for index, item in enumerate(old_metadata)
+            if item["source"] not in new_sources
+        ]
+
+        old_embeddings = old_embeddings[keep_indices]
+
+        old_metadata = [
+            old_metadata[index]
+            for index in keep_indices
+        ]
+
+        # Combine old and new data
+        embeddings = np.vstack([
+            old_embeddings,
+            new_embeddings
+        ])
+
+        metadata = old_metadata + chunks
+
+    else:
+
+        embeddings = new_embeddings
+        metadata = chunks
+
+    # Assign unique IDs
+    for index, chunk in enumerate(metadata):
+        chunk["id"] = index
+
+    # Save embeddings
     np.save(EMBEDDINGS_FILE, embeddings)
 
+    # Save metadata
     with open(METADATA_FILE, "w", encoding="utf-8") as file:
         json.dump(
-            chunks,
+            metadata,
             file,
             ensure_ascii=False,
             indent=2
         )
 
-    print(f"Saved {len(chunks)} chunks.")
+    print("\nIndex updated successfully!")
+    print("Total indexed chunks:", len(metadata))
     print("Embedding shape:", embeddings.shape)
-
+    print("Updated PDFs:", ", ".join(sorted(new_sources)))
 
 # ---------------------------------------------------------
 # LOAD INDEX
@@ -158,8 +221,8 @@ def search(query: str, top_k=5, source: str | None = None):
 
         # Weighted combination
         #
-        # Semantic = 70%
-        # Keyword  = 30%
+        # Semantic = 85%
+        # Keyword  = 15%
 
         hybrid_score = (
             0.85 * semantic_score

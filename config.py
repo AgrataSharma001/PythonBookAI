@@ -38,7 +38,7 @@ OLLAMA_MODEL = "llama3.2:3b"
 CHUNK_SIZE = 900
 CHUNK_OVERLAP = 150
 
-TOP_K = 5
+TOP_K = 8
 
 
 # ============================================================
@@ -46,5 +46,5 @@ TOP_K = 5
 # ============================================================
 
 SUMMARY_CHUNK_SIZE = 1800
-SUMMARY_CHUNK_OVERLAP = 200
+SUMMARY_CHUNK_OVERLAP    = 200
 SUMMARY_BATCH_SIZE = 6

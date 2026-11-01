@@ -27,8 +27,42 @@
             </div>
 
             <button id="new-chat-button" class="new-chat-button">
-                + New Question
+            + New Question
             </button>
+
+<!-- PDF Upload Section -->
+<div class="upload-section">
+
+    <h3>YOUR BOOKS</h3>
+
+    <input
+        type="file"
+        id="pdf-upload-input"
+        accept=".pdf,application/pdf"
+        hidden
+    >
+
+    <button
+        type="button"
+        id="upload-pdf-button"
+        class="upload-pdf-button"
+    >
+        📄 Upload PDF
+    </button>
+
+    <p id="upload-status" class="upload-status">
+        Add your own Python books.
+    </p>
+
+</div>
+            <!-- Recent Conversations -->
+<div class="history-section">
+    <h3>RECENT CHATS</h3>
+
+    <div id="conversation-list" class="conversation-list">
+        <!-- Saved conversations will appear here -->
+    </div>
+</div>
 
             <div class="sidebar-section">
                 <h3>ABOUT</h3>
@@ -71,7 +105,18 @@
                 <option value="pythonbook5.pdf">Python Book 5</option>
             </select>
         </div>
+<!-- PDF SUMMARIZATION -->
+<div class="summarize-section">
 
+    <button type="button" id="summarize-button">
+        📝 Summarize PDF
+    </button>
+
+    <p id="summarize-status">
+        Select a PDF to generate its summary.
+    </p>
+
+</div>
         <!-- Local Model -->
         <div class="model-badge">
             Ollama · llama3.2:3b
@@ -146,14 +191,22 @@
 
             </section>
 
+<!-- SUMMARY DISPLAY -->
+<section id="summary-container" hidden>
 
-            <!-- Conversation area -->
-            <section id="chat-container"
-                     class="chat-container"
-                     aria-live="polite">
+    <h2>📄 PDF Summary</h2>
 
-            </section>
+    <div id="summary-content"></div>
 
+</section>
+
+
+<!-- Conversation area -->
+<section id="chat-container"
+         class="chat-container"
+         aria-live="polite">
+</section>
+            
 
             <!-- Input area -->
             <footer class="input-area">
@@ -184,6 +237,7 @@
                 </p>
 
             </footer>
+
 
         </main>
 

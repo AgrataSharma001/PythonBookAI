@@ -244,6 +244,12 @@ def answer_question(
 
     context = "\n\n".join(context_parts)
 
+    print("\n" + "=" * 60)
+    print("DEBUG: RETRIEVED CONTEXT")
+    print("=" * 60)
+    print(context)
+    print("=" * 60 + "\n")
+
     # STEP 4: BUILD THE PROMPT
 
     prompt = f"""
@@ -259,20 +265,42 @@ def answer_question(
 
 ================ INSTRUCTIONS FOR THIS ANSWER ================
 
-Answer the user's question directly.
+Answer every part of the user's question.
 
-Use relevant retrieved passages as the primary source.
-Do not cite a source unless its content supports the answer.
-Use concise Markdown with headings only when useful.
+Before writing the answer, identify each part of the question
+and make sure the final response addresses all of them.
 
-If you provide Python code, make sure the example is relevant,
-the syntax is valid for Python 3, and the stated output is correct.
+For programming concepts:
+1. Define the concept clearly.
+2. Explain its purpose.
+3. List and briefly explain the requested types or categories.
+4. Answer any additional questions explicitly.
+5. Include a relevant Python example when useful.
 
-Do not include empty headings, template placeholders, or
-unnecessary introductory text.
+For inheritance questions, when supported by the retrieved
+context, cover:
+- The meaning of inheritance.
+- Single inheritance.
+- Multiple inheritance.
+- Multilevel inheritance.
+- Hierarchical inheritance.
+- Hybrid inheritance.
+- Whether inheritance is part of OOP in Python.
 
-Return the answer only.
-"""
+If the retrieved context does not support a requested detail,
+say that the available book passages do not provide enough
+information. Do not invent book citations.
+
+Use the retrieved book passages as the primary source.
+Do not repeat the same explanation under multiple headings.
+Use one clear heading for each major part of the answer.
+Do not create duplicate "Direct answer" headings.
+
+If you provide Python code, ensure the syntax is valid and
+the example is relevant.
+
+Use concise, readable Markdown.
+Return the answer only."""
 
     # STEP 5: GENERATE THE ANSWER
 
